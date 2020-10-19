@@ -11,6 +11,7 @@
 #
 # See:
 # https://groups.google.com/forum/#!forum/sqlparse/browse_thread/thread/b0bd9a022e9d4895
+import re
 
 import sqlparse
 from sqlparse.sql import IdentifierList, Identifier
@@ -33,7 +34,12 @@ def extract_from_part(parsed):
             if is_subselect(item):
                 yield from extract_from_part(item)
             elif item.ttype is Keyword:
-                return
+                # Check for the keywords JOIN or ON that form ANSI joins. If we find these we must keep looking for more
+                # table names later.
+                # if 'JOIN' not in item.value.upper():
+                if not re.search('JOIN|ON|AND|(?!ORDER)OR', item.value.upper()):
+                # if 'JOIN' not in item.value.upper():
+                    return
             else:
                 yield item
         elif item.ttype is Keyword and item.value.upper() == 'FROM':
