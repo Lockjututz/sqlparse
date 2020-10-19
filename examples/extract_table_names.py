@@ -50,9 +50,9 @@ def extract_table_identifiers(token_stream):
     for item in token_stream:
         if isinstance(item, IdentifierList):
             for identifier in item.get_identifiers():
-                yield identifier.get_name()
+                yield identifier.get_real_name()
         elif isinstance(item, Identifier):
-            yield item.get_name()
+            yield item.get_real_name()
         # It's a bug to check for Keyword here, but in the example
         # above some tables names are identified as keywords...
         elif item.ttype is Keyword:
